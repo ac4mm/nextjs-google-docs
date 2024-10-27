@@ -1,7 +1,20 @@
+'use client'
+
 import Image from 'next/image';
 import docsIcon from '../../public/logo.svg';
+import Rte from "@gds/app/ui/rte";
+import {SetStateAction, useState} from "react";
 
 export default function Page() {
+    const initialDocumentContent = "<p>Welcome to your new document!</p>";
+    const [savedContent, setSavedContent] = useState("");
+
+    const handleSave = (content: SetStateAction<string>) => {
+        console.log("Document content saved:", content);
+        setSavedContent(content); // Here you can send it to a server or save locally
+    };
+
+
     return (
         <>
             <header className="flex items-center p-2 border-b border-gray-200 bg-gray-50">
@@ -42,6 +55,17 @@ export default function Page() {
                     <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
                 </div>
             </header>
+
+            {/*RTE*/}
+            <div className="min-h-screen p-6 bg-gray-100">
+                <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
+                {savedContent && (
+                    <div className="mt-6 p-4 border rounded bg-gray-50">
+                        <h2 className="text-lg font-semibold">Saved Content:</h2>
+                        <div dangerouslySetInnerHTML={{__html: savedContent}}/>
+                    </div>
+                )}
+            </div>
         </>
     )
 }

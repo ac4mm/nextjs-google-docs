@@ -6,12 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "server": "node ./server/server.js"
   },
   "dependencies": {
+    "@heroicons/react": "^2.1.5",
+    "@tiptap/extension-color": "^2.9.1",
+    "@tiptap/extension-underline": "^2.9.1",
+    "@tiptap/pm": "^2.9.1",
+    "@tiptap/react": "^2.9.1",
+    "@tiptap/starter-kit": "^2.9.1",
+    "clsx": "^2.1.1",
+    "express": "^4.21.1",
     "next": "14.2.15",
+    "next-auth": "^4.24.8",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -22,5 +34,6 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@9.12.1+sha512.e5a7e52a4183a02d5931057f7a0dbff9d5e9ce3161e33fa68ae392125b79282a8a8a470a51dfc8a0ed86221442eb2fb57019b0990ed24fab519bf0e1bc5ccfc4"
 }
