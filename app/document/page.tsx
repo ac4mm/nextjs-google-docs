@@ -15,6 +15,17 @@ export default function Page() {
         setSavedContent(content); // Here you can send it to a server or save locally
     };
 
+    const [components, setComponents] = useState([]);
+
+    const addComponent = () => {
+        setComponents((prevComponents) => {
+            return [
+                ...prevComponents,
+                <AccountIcon key={prevComponents.length} index={prevComponents.length + 1}/>
+            ];
+        });
+    };
+
 
     return (
         <>
@@ -54,6 +65,11 @@ export default function Page() {
 
                 {/* User Area */}
                 <div className="flex items-center space-x-2 justify-end	mx-4">
+
+                    {/*Testing dynamic component*/}
+                    <button onClick={addComponent}>Add Component</button>
+                    {components}
+
                     <AccountIcon firstLetterName="B"/>
 
                     <button className="text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
@@ -64,7 +80,7 @@ export default function Page() {
                 </div>
             </header>
 
-                {/*RTE*/}
+            {/*RTE*/}
             <div className="min-h-screen p-6 bg-gray-100">
                 <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
                 {savedContent && (
