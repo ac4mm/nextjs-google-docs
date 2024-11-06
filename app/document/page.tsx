@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import docsIcon from '../../public/logo.svg';
 import Rte from "@gds/app/ui/rte";
-import {SetStateAction, useState} from "react";
+import React, {SetStateAction, useState} from "react";
+import {AccountIcon} from "@gds/app/ui/account-icon";
 
 export default function Page() {
     const initialDocumentContent = "<p>Welcome to your new document!</p>";
@@ -53,15 +54,17 @@ export default function Page() {
 
                 {/* User Area */}
                 <div className="flex items-center space-x-2 justify-end	mx-4">
+                    <AccountIcon firstLetterName="B"/>
+
                     <button className="text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
                         Share
                     </button>
                     {/*Profile user*/}
-                    <div className="w-8 h-8 bg-green-700 text-slate-50 rounded-full inline-flex items-center justify-center">A</div>
+                    <AccountIcon firstLetterName="A"/>
                 </div>
             </header>
 
-            {/*RTE*/}
+                {/*RTE*/}
             <div className="min-h-screen p-6 bg-gray-100">
                 <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
                 {savedContent && (

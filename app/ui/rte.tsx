@@ -42,7 +42,7 @@ export default function Rte({ initialContent, onSave }){
             <div className="flex space-x-2 mb-4">
                 <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={`px-3 py-1 rounded ${editor.isActive('bold') ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    className={`px-3 py-1 hover:bg-gray-200 rounded ${editor.isActive('bold') ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                 >
                     Bold
                 </button>
@@ -82,9 +82,9 @@ export default function Rte({ initialContent, onSave }){
             <EditorContent editor={editor} className="border p-4 min-h-[400px] rounded bg-white shadow-sm" />
 
             {/* Save Button */}
-            <div className="mt-4">
+            <div className="mt-4 flex justify-end">
                 <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded">
-                    Save Document
+                    Save
                 </button>
             </div>
         </div>
