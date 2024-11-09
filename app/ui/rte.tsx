@@ -3,7 +3,12 @@ import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
 import {Underline} from "@tiptap/extension-underline";
 
-export default function Rte({ initialContent, onSave }){
+interface RteProps {
+    initialContent: string;
+    onSave?: (html: string) => void;
+}
+
+export const Rte: React.FC<RteProps> = ({ initialContent, onSave }: RteProps)=> {
     // Initialize the editor with initial content
     const editor = useEditor({
         extensions: [
@@ -74,7 +79,7 @@ export default function Rte({ initialContent, onSave }){
             </div>
 
             {/* Editor Content */}
-            <EditorContent editor={editor} className="border p-4 min-h-[400px] rounded bg-white shadow-sm" />
+            <EditorContent editor={editor} className="border p-4 w-4/5 h-96	xl:mx-auto rounded bg-white" />
 
             {/* Save Button */}
             <div className="mt-4 flex justify-end">

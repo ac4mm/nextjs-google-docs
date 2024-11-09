@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import docsIcon from '../../public/Google_Docs_2020_Logo.svg';
-import Rte from "@gds/app/ui/rte";
+import {Rte} from "@gds/app/ui/rte";
 import React, {SetStateAction, useEffect, useState} from "react";
 import {AccountIcon} from "@gds/app/ui/account-icon";
 import {useGlobalContext} from "@gds/app/context/store";
@@ -23,7 +23,7 @@ export default function Page() {
         setComponents((prevComponents) => {
             return [
                 ...prevComponents,
-                <AccountIcon key={prevComponents.length} index={prevComponents.length + 1}/>
+                <AccountIcon key={prevComponents.length} index={prevComponents.length + 1} firstLetterName={undefined}/>
             ];
         });
     };
@@ -79,18 +79,18 @@ export default function Page() {
                     <button onClick={addComponent}>Add Component</button>
                     {components}
 
-                    <AccountIcon firstLetterName={firstLetterUsername}/>
+                    <AccountIcon firstLetterName={firstLetterUsername} index={undefined}/>
 
-                    <button className="text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
+                    <button className="w-24 h-10 text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
                         Share
                     </button>
                     {/*Profile user*/}
-                    <AccountIcon firstLetterName="A"/>
+                    <AccountIcon firstLetterName="A" index={undefined}/>
                 </div>
             </header>
 
             {/*RTE*/}
-            <div className="min-h-screen p-6 bg-gray-100">
+            <div className="p-6 bg-gray-100">
                 <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
                 {savedContent && (
                     <div className="mt-6 p-4 border rounded bg-gray-50">
