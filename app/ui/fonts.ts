@@ -1,4 +1,4 @@
-import {Advent_Pro} from 'next/font/google';
+import {Roboto_Mono} from 'next/font/google';
 
-export const adventPro = Advent_Pro({ subsets: ['latin'] });
+export const robotoMono = Roboto_Mono({ subsets: ['latin'] });
 

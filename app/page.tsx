@@ -1,8 +1,9 @@
 "use client"
 
-import {adventPro} from '@gds/app/ui/fonts';
+import {robotoMono} from '@gds/app/ui/fonts';
 import {useRouter} from "next/navigation";
 import {useGlobalContext} from "@gds/app/context/store";
+import React from "react";
 
 export default function Home() {
     const router = useRouter();
@@ -21,14 +22,14 @@ export default function Home() {
                     <img
                         alt="Google Docs"
                         src="https://upload.wikimedia.org/wikipedia/commons/6/66/Google_Docs_2020_Logo.svg?color=indigo&shade=600"
-                        className="mx-auto h-10 w-auto"
+                        className="mx-auto h-16 w-auto"
                     />
-                    <h2 className={`${adventPro.className} regular mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white-900`}>
+                    <h2 className={`${robotoMono.className} regular mt-6 mb-6 text-center text-3xl font-semibold leading-9 tracking-tight text-white-900`}>
                         Google Docs
                     </h2>
                 </div>
 
-                <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                <div className="mt-10 mb-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <form action="#" className="space-y-6" onSubmit={onSubmit}>
                         <div>
                             <label htmlFor="username" className="block text-sm font-medium leading-6 text-white-900">

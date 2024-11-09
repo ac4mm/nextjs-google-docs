@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import {GlobalContextProvider} from "@gds/app/context/store";
+import {robotoMono} from "@gds/app/ui/fonts";
 import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 export const metadata: Metadata = {
   title: "Google Docs",
@@ -27,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full bg-white">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
+        className={`${robotoMono.className} antialiased h-full`}
       >
       <GlobalContextProvider>
         {children}

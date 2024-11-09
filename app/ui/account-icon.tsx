@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export function AccountIcon({firstLetterName}) {
+export function AccountIcon({firstLetterName}){
     const [bgColor, setBgColor] = useState('bg-slate-700');
 
     const bgColorTailwindcss = [
