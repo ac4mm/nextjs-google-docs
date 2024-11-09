@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image';
-import docsIcon from '../../public/logo.svg';
+import docsIcon from '../../public/Google_Docs_2020_Logo.svg';
 import Rte from "@gds/app/ui/rte";
 import React, {SetStateAction, useEffect, useState} from "react";
 import {AccountIcon} from "@gds/app/ui/account-icon";
