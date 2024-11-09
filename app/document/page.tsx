@@ -47,7 +47,7 @@ export default function Page() {
                             <Image
                                 priority
                                 src={docsIcon}
-                                style={{width: "36px", height: "36px"}}
+                                style={{width: "44px", height: "44px"}}
                                 alt="Google Docs icon"
                             />
                         </button>
