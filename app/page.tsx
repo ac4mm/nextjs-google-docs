@@ -1,14 +1,17 @@
 "use client"
 
-import {useState} from "react";
 import {adventPro} from '@gds/app/ui/fonts';
+import {useRouter} from "next/navigation";
+import {useGlobalContext} from "@gds/app/context/store";
 
 export default function Home() {
-    const [username, setUsername] = useState('');
+    const router = useRouter();
+    const {username, setUsername}= useGlobalContext();
 
-    async function onSubmit(e) {
+    async function onSubmit(e: { preventDefault: () => void; }) {
         e.preventDefault();
-        console.log(username);
+
+        router.push('/document');
     }
 
     return (

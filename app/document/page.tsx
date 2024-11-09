@@ -3,12 +3,14 @@
 import Image from 'next/image';
 import docsIcon from '../../public/logo.svg';
 import Rte from "@gds/app/ui/rte";
-import React, {SetStateAction, useState} from "react";
+import React, {SetStateAction, useEffect, useState} from "react";
 import {AccountIcon} from "@gds/app/ui/account-icon";
+import {useGlobalContext} from "@gds/app/context/store";
 
 export default function Page() {
     const initialDocumentContent = "<p>Welcome to your new document!</p>";
     const [savedContent, setSavedContent] = useState("");
+    const [firstLetterUsername, setFirsLetterUsername] = useState('');
 
     const handleSave = (content: SetStateAction<string>) => {
         console.log("Document content saved:", content);
@@ -25,6 +27,12 @@ export default function Page() {
             ];
         });
     };
+
+    //Ge username and set first letter in AccountIcon
+    const {username, setUsername}= useGlobalContext();
+    useEffect(() => {
+        setFirsLetterUsername(username.charAt(0).toUpperCase())
+    }, [firstLetterUsername])
 
 
     return (
@@ -44,15 +52,16 @@ export default function Page() {
                             />
                         </button>
 
-                    <input
-                        type="text"
+                        <input
+                            type="text"
                             defaultValue="Untitled Document"
                             className="text-xl font-normal focus:outline-none border-b border-transparent focus:border-gray-300 pl-1"
                         />
                     </div>
 
                     {/* Menu Area */}
-                    <div className="flex-grow flex items-center justify-start space-x-1 text-sm text-gray-600 pl-14">
+                    <div
+                        className="flex-grow flex items-center justify-start space-x-1 text-sm text-gray-600 pl-14">
                         <button className="hover:bg-gray-200 px-2 py-1 rounded">File</button>
                         <button className="hover:bg-gray-200 px-2 py-1 rounded">Edit</button>
                         <button className="hover:bg-gray-200 px-2 py-1 rounded">View</button>
@@ -70,7 +79,7 @@ export default function Page() {
                     <button onClick={addComponent}>Add Component</button>
                     {components}
 
-                    <AccountIcon firstLetterName="B"/>
+                    <AccountIcon firstLetterName={firstLetterUsername}/>
 
                     <button className="text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
                         Share
