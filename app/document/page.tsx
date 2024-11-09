@@ -3,9 +3,10 @@
 import Image from 'next/image';
 import docsIcon from '../../public/Google_Docs_2020_Logo.svg';
 import {Rte} from "@gds/app/ui/rte";
-import React, {SetStateAction, useEffect, useState} from "react";
+import React, {SetStateAction, Suspense, useEffect, useState} from "react";
 import {AccountIcon} from "@gds/app/ui/account-icon";
 import {useGlobalContext} from "@gds/app/context/store";
+import Loading from "@gds/app/document/loading";
 
 export default function Page() {
     const initialDocumentContent = "<p>Welcome to your new document!</p>";
@@ -37,68 +38,72 @@ export default function Page() {
 
     return (
         <>
-            <header className="flex items-center p-2 border-b border-gray-200 bg-gray-50">
+            <Suspense fallback={<Loading/>}>
+                {/*Header*/}
+                <header className="flex items-center p-2 border-b border-gray-200 bg-gray-50">
 
-                {/* Logo and Menu Area */}
-                <div className="flex flex-col space-y-1 flex-grow">
-                    {/* Logo Area */}
-                    <div className="flex items-center space-x-2 flex-grow">
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded-full">
-                            <Image
-                                priority
-                                src={docsIcon}
-                                style={{width: "44px", height: "44px"}}
-                                alt="Google Docs icon"
+                    {/* Logo and Menu Area */}
+                    <div className="flex flex-col space-y-1 flex-grow">
+                        {/* Logo */}
+                        <div className="flex items-center space-x-2 flex-grow">
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded-full">
+                                <Image
+                                    priority
+                                    src={docsIcon}
+                                    style={{width: "44px", height: "44px"}}
+                                    alt="Google Docs icon"
+                                />
+                            </button>
+
+                            <input
+                                type="text"
+                                defaultValue="Untitled Document"
+                                className="text-xl font-normal focus:outline-none border-b border-transparent focus:border-gray-300 pl-1"
                             />
+                        </div>
+
+                        {/* Menu */}
+                        <div
+                            className="flex-grow flex items-center justify-start space-x-1 text-sm text-gray-600 pl-14">
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">File</button>
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">Edit</button>
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">View</button>
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">Insert</button>
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">Format</button>
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">Tools</button>
+                            <button className="hover:bg-gray-200 px-2 py-1 rounded">Help</button>
+                        </div>
+                    </div>
+
+                    {/* User Area */}
+                    <div className="flex items-center space-x-2 justify-end	mx-4">
+
+                        {/*Testing dynamic component*/}
+                        <button onClick={addComponent}>Add Component</button>
+                        {components}
+
+                        <AccountIcon firstLetterName={firstLetterUsername} index={undefined}/>
+
+                        <button className="w-24 h-10 text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
+                            Share
                         </button>
-
-                        <input
-                            type="text"
-                            defaultValue="Untitled Document"
-                            className="text-xl font-normal focus:outline-none border-b border-transparent focus:border-gray-300 pl-1"
-                        />
+                        {/*Profile user*/}
+                        <AccountIcon firstLetterName="A" index={undefined}/>
                     </div>
+                </header>
 
-                    {/* Menu Area */}
-                    <div
-                        className="flex-grow flex items-center justify-start space-x-1 text-sm text-gray-600 pl-14">
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">File</button>
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">Edit</button>
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">View</button>
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">Insert</button>
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">Format</button>
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">Tools</button>
-                        <button className="hover:bg-gray-200 px-2 py-1 rounded">Help</button>
-                    </div>
+                {/*Content with RTE*/}
+                <div className="p-6 bg-gray-100">
+                    <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
+                    {savedContent && (
+                        <div className="mt-6 p-4 border rounded bg-gray-50">
+                            <h2 className="text-lg font-semibold">Saved Content:</h2>
+                            <div dangerouslySetInnerHTML={{__html: savedContent}}/>
+                        </div>
+                    )}
                 </div>
+            </Suspense>
 
-                {/* User Area */}
-                <div className="flex items-center space-x-2 justify-end	mx-4">
-
-                    {/*Testing dynamic component*/}
-                    <button onClick={addComponent}>Add Component</button>
-                    {components}
-
-                    <AccountIcon firstLetterName={firstLetterUsername} index={undefined}/>
-
-                    <button className="w-24 h-10 text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
-                        Share
-                    </button>
-                    {/*Profile user*/}
-                    <AccountIcon firstLetterName="A" index={undefined}/>
-                </div>
-            </header>
-
-            {/*RTE*/}
-            <div className="p-6 bg-gray-100">
-                <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
-                {savedContent && (
-                    <div className="mt-6 p-4 border rounded bg-gray-50">
-                        <h2 className="text-lg font-semibold">Saved Content:</h2>
-                        <div dangerouslySetInnerHTML={{__html: savedContent}}/>
-                    </div>
-                )}
-            </div>
         </>
     )
 }
