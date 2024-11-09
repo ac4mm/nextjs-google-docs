@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, Dispatch, SetStateAction, useContext, useState} from "react";
+import {createContext, Dispatch, FC, SetStateAction, useContext, useState} from "react";
 
 interface ContextProps {
     username: string;
@@ -12,7 +12,7 @@ export const GlobalContext = createContext<ContextProps>({
     setUsername: () => ''
 })
 
-export const GlobalContextProvider = ( ({children}) => {
+export const GlobalContextProvider: FC<any> = ( ({children}) => {
     const [username, setUsername] = useState('');
 
     return (

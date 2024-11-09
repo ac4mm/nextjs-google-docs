@@ -1,9 +1,6 @@
+import {useEffect} from "react";
 import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
-import {Bold} from "@tiptap/extension-bold";
-import {Italic} from "@tiptap/extension-italic";
-import {Heading} from "@tiptap/extension-heading";
-import {useEffect} from "react";
 import {Underline} from "@tiptap/extension-underline";
 
 export default function Rte({ initialContent, onSave }){
@@ -11,12 +8,10 @@ export default function Rte({ initialContent, onSave }){
     const editor = useEditor({
         extensions: [
             StarterKit,
-            Bold,
-            Italic,
-            Underline,
-            Heading.configure({ levels: [1, 2, 3] }),
+            Underline
         ],
         content: initialContent,  // Setting initial content
+        immediatelyRender: false
     });
 
     useEffect(() => {
@@ -33,7 +28,7 @@ export default function Rte({ initialContent, onSave }){
     };
 
     if (!editor) {
-        return null;
+        return null
     }
 
     return (

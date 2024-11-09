@@ -17,7 +17,7 @@ export default function Page() {
         setSavedContent(content); // Here you can send it to a server or save locally
     };
 
-    const [components, setComponents] = useState([]);
+    const [components, setComponents] = useState<React.ReactNode[]>([]);
 
     const addComponent = () => {
         setComponents((prevComponents) => {
@@ -28,7 +28,7 @@ export default function Page() {
         });
     };
 
-    //Ge username and set first letter in AccountIcon
+    //Ge username and set first letter
     const {username, setUsername}= useGlobalContext();
     useEffect(() => {
         setFirsLetterUsername(username.charAt(0).toUpperCase())
