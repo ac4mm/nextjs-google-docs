@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {GlobalContextProvider} from "@gds/app/context/store";
 import {robotoMono} from "@gds/app/ui/fonts";
 import "./globals.css";
+import 'react-loading-skeleton/dist/skeleton.css'
 
 export const metadata: Metadata = {
   title: "Google Docs",
