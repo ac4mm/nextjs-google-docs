@@ -79,7 +79,7 @@ export const Rte: React.FC<RteProps> = ({ initialContent, onSave }: RteProps)=> 
             </div>
 
             {/* Editor Content */}
-            <EditorContent editor={editor} className="border p-4 w-4/5 h-96	xl:mx-auto rounded bg-white" />
+            <EditorContent editor={editor} className="border p-4 w-9/12 h-96 xl:mx-auto rounded bg-white" />
 
             {/* Save Button */}
             <div className="mt-4 flex justify-end">

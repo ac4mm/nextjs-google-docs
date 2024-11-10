@@ -55,7 +55,7 @@ export default function Loading(){
                 </div>
 
                 {/*    Editor Content*/}
-                <Skeleton className="border p-4 w-4/5 h-96 mx-36 rounded bg-white" height={384} width={1151}/>
+                <Skeleton className="border p-4 w-9/12 h-96 mx-36 rounded bg-white" height={384} width={1151}/>
             </div>
         </div>
     )
