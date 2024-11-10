@@ -7,11 +7,13 @@ import React, {SetStateAction, Suspense, useEffect, useState} from "react";
 import {AccountIcon} from "@gds/app/ui/account-icon";
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/document/loading";
+import {useRouter} from "next/navigation";
 
 export default function Page() {
     const initialDocumentContent = "<p>Welcome to your new document!</p>";
     const [savedContent, setSavedContent] = useState("");
     const [firstLetterUsername, setFirsLetterUsername] = useState('');
+    const router = useRouter()
 
     const handleSave = (content: SetStateAction<string>) => {
         console.log("Document content saved:", content);
@@ -33,7 +35,14 @@ export default function Page() {
     const {username, setUsername}= useGlobalContext();
     useEffect(() => {
         setFirsLetterUsername(username.charAt(0).toUpperCase())
-    }, [firstLetterUsername])
+    }, [firstLetterUsername]);
+
+    //Redirect to first page, when refresh page
+    useEffect(() => {
+        if (username === "") {
+            router.push('/')
+        }
+    }, [])
 
 
     return (
