@@ -1,10 +1,12 @@
 "use client"
 
-import React, {Suspense} from "react";
+import React, {Suspense, useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {robotoMono} from '@gds/app/ui/fonts';
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/loading";
+import {socket} from "@gds/socket";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
     const router = useRouter();
@@ -13,8 +15,68 @@ export default function Home() {
     async function onSubmit(e: { preventDefault: () => void; }) {
         e.preventDefault();
 
+        if (socket.connected) {
+            onConnect(username);
+
+            console.log("idSocket:",socket.id);
+        }
+
         router.push('/document');
     }
+
+    const [isConnected, setIsConnected] = useState(false);
+    const [transport, setTransport] = useState("N/A");
+
+    function onConnect(usernameInput?: string) {
+        setIsConnected(true);
+        setTransport(socket.io.engine.transport.name);
+
+        const username = usernameInput ? usernameInput : uuidv4();
+        console.log(`User ${username} connected`);
+
+        socket.io.engine.on("upgrade", (transport) => {
+            setTransport(transport.name);
+        });
+    }
+
+    function onDisconnect() {
+        setIsConnected(false);
+        setTransport("N/A");
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    useEffect(() => {
+        // if (socket.connected) {
+        //     onConnect();
+        // }
+        //
+        // function onConnect() {
+        //     setIsConnected(true);
+        //     setTransport(socket.io.engine.transport.name);
+        //
+        //     const userId = uuidv4();
+        //     console.log(`User ${userId} connected`);
+        //
+        //     socket.io.engine.on("upgrade", (transport) => {
+        //         setTransport(transport.name);
+        //     });
+        // }
+        //
+        // function onDisconnect() {
+        //     setIsConnected(false);
+        //     setTransport("N/A");
+        // }
+        //
+        // socket.on("connect", onConnect);
+        // socket.on("disconnect", onDisconnect);
+
+        return () => {
+            // socket.off("connect", onConnect);
+            // socket.off("disconnect", onDisconnect);
+        };
+    }, []);
 
     return (
         <>
@@ -49,7 +111,7 @@ export default function Home() {
                                         required
                                         autoComplete="username"
                                         className="block w-full rounded-md border-0 py-1.5 px-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        onInput={(e) => setUsername( (e.target as HTMLInputElement)?.value)}
+                                        onInput={(e) => setUsername((e.target as HTMLInputElement)?.value)}
                                     />
                                 </div>
                             </div>
@@ -67,6 +129,11 @@ export default function Home() {
                         </form>
                     </div>
                 </Suspense>
+
+                <div>
+                    <p>Status: {isConnected ? "connected" : "disconnected"}</p>
+                    <p>Transport: {transport}</p>
+                </div>
             </div>
         </>
     )
