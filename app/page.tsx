@@ -12,17 +12,35 @@ export default function Home() {
     const router = useRouter();
     const {username, setUsername}= useGlobalContext();
 
+    const [room, setRoom] = useState("default"); // Default room for all tabs
+    const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState([]);
+
     async function onSubmit(e: { preventDefault: () => void; }) {
         e.preventDefault();
 
         if (socket.connected) {
-            onConnect(username);
+            // onConnect(username);
 
-            console.log("idSocket:",socket.id);
+            // Join the room
+            // socket.emit("joinRoom", room);
+
+            // socket.emit("username", username);
         }
 
-        router.push('/document');
+        // router.push('/document');
     }
+
+    const sendMessage = () => {
+        if (message) {
+            // Send the message to the server
+            socket.emit("sendMessage", { room, message });
+
+            // Add the message to local state
+            setMessages((prevMessages) => [...prevMessages, message]);
+            setMessage("");
+        }
+    };
 
     const [isConnected, setIsConnected] = useState(false);
     const [transport, setTransport] = useState("N/A");
@@ -32,7 +50,7 @@ export default function Home() {
         setTransport(socket.io.engine.transport.name);
 
         const username = usernameInput ? usernameInput : uuidv4();
-        console.log(`User ${username} connected`);
+        // console.log(`User ${username} connected`);
 
         socket.io.engine.on("upgrade", (transport) => {
             setTransport(transport.name);
@@ -44,39 +62,27 @@ export default function Home() {
         setTransport("N/A");
     }
 
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
     useEffect(() => {
-        // if (socket.connected) {
-        //     onConnect();
-        // }
-        //
-        // function onConnect() {
-        //     setIsConnected(true);
-        //     setTransport(socket.io.engine.transport.name);
-        //
-        //     const userId = uuidv4();
-        //     console.log(`User ${userId} connected`);
-        //
-        //     socket.io.engine.on("upgrade", (transport) => {
-        //         setTransport(transport.name);
-        //     });
-        // }
-        //
-        // function onDisconnect() {
-        //     setIsConnected(false);
-        //     setTransport("N/A");
-        // }
-        //
-        // socket.on("connect", onConnect);
-        // socket.on("disconnect", onDisconnect);
-
         return () => {
             // socket.off("connect", onConnect);
             // socket.off("disconnect", onDisconnect);
         };
     }, []);
+
+
+    useEffect(() => {
+        // Join the room
+        socket.emit("joinRoom", room);
+
+        // Listen for messages
+        socket.on("message", (msg) => {
+            setMessages((prevMessages) => [...prevMessages, msg]);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [room]);
 
     return (
         <>
@@ -133,6 +139,28 @@ export default function Home() {
                 <div>
                     <p>Status: {isConnected ? "connected" : "disconnected"}</p>
                     <p>Transport: {transport}</p>
+                </div>
+
+                <div>
+                    <h1>Multi-Tab Chat</h1>
+                    <h2>Room: {room}</h2>
+
+                    <input
+                        type="text"
+                        placeholder="Enter your message"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <button onClick={sendMessage}>Send Message</button>
+
+                    <div>
+                        <h2>Messages:</h2>
+                        <ul>
+                            {messages.map((msg, idx) => (
+                                <li key={idx}>{msg}</li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </>
