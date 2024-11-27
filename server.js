@@ -14,19 +14,54 @@ app.prepare().then(() => {
 
     const io = new Server(httpServer);
 
+    let users = [];
     io.on("connection", (socket) => {
 
-        console.log(`User ${socket.id} connected`);
+        // console.log(`User ${socket.id} connected`);
+
+        // socket.on("join", (data) => {
+        //     users.push({ id: socket.id, username: data.username });
+        //     io.emit("userList", users); // Send updated user list
+        // });
+
+        socket.on("userJoinRoom", ({username, room}) => {
+            socket.join(room);
+            socket.username = username;
+            console.log(`User ${username} joined room: ${room}`);
+
+            socket.broadcast.emit("stateUpdated", {
+                socketId: socket.id,
+                username: username,
+                firstCapitalLetter: username.charAt(0).toUpperCase(),
+            });
+        });
 
         socket.on("joinRoom", (room) => {
             socket.join(room);
-            console.log(`User ${socket.id} joined room ${room}`);
-            // socket.to(room).emit("message", `User ${socket.id} has joined the room`);
+            // console.log(`User ${socket.id} joined room: ${room}`);
+            socket.to(room).emit("message", `User ${socket.id} has joined the room`);
+
+
+        });
+
+        // Get users in a room with their usernames
+        socket.on('getUsersInRoom', (room, callback) => {
+            const socketsInRoom = io.sockets.adapter.rooms.get(room) || new Set();
+            const usersInRoom = [...socketsInRoom].map((socketId) => {
+                const userSocket = io.sockets.sockets.get(socketId);
+                return {
+                    socketId: socketId,
+                    username: userSocket?.username,
+                    firstCapitalLetter: userSocket?.username.charAt(0).toUpperCase(),
+                };
+            });
+
+            callback(usersInRoom);
         });
 
         // Broadcast message to the room
         socket.on("sendMessage", ({ room, message }) => {
-            console.log(`Message to ${room}: ${message}`);
+            // console.log(`Message to ${room}: ${message}`);
             io.to(room).emit("message", message);
         });
 
@@ -40,8 +75,11 @@ app.prepare().then(() => {
         // });
 
         socket.on("disconnect", () => {
-            // console.log(`User ${socket.username} disconnected`, socket.id);
-            console.log("User disconnected:", socket.id);
+            console.log(`User ${socket.username} disconnected`, socket.id);
+            // console.log("User disconnected:", socket.id);
+
+            users = users.filter((user) => user.id !== socket.id);
+            io.emit("userList", users); // Send updated user list
         });
     });
 

@@ -1,24 +1,15 @@
 'use client';
 
 import {createContext, Dispatch, FC, SetStateAction, useContext, useState} from "react";
-import {boolean} from "zod";
 
 interface ContextProps {
     username: string;
     setUsername: Dispatch<SetStateAction<string>>;
-    // room: string[];
-    // setRoom: Dispatch<SetStateAction<string[]>>;
-    // joined: boolean;
-    // setJoined: Dispatch<SetStateAction<boolean>>;
 }
 
 export const GlobalContext = createContext<ContextProps>({
     username: '',
     setUsername: () => '',
-    // room: [],
-    // setRoom: () => [],
-    // joined: false,
-    // setJoined: () => boolean,
 })
 
 export const GlobalContextProvider: FC<never> = ( ({children}) => {
@@ -28,7 +19,7 @@ export const GlobalContextProvider: FC<never> = ( ({children}) => {
 
     return (
         <GlobalContext.Provider value={{username, setUsername}}>
-            {children}
+                {children}
         </GlobalContext.Provider>
     )
 })

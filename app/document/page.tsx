@@ -8,12 +8,12 @@ import {AccountIcon} from "@gds/app/ui/account-icon";
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/document/loading";
 import {useRouter} from "next/navigation";
+import {socket} from "@gds/socket";
 
 export default function Page() {
-    const initialDocumentContent = "<p>Welcome to your new document!</p>";
+    const initialDocumentContent = "Welcome to your new document!";
     const [savedContent, setSavedContent] = useState("");
-    const [firstLetterUsername, setFirsLetterUsername] = useState('');
-    const router = useRouter()
+    const router = useRouter();
 
     const handleSave = (content: SetStateAction<string>) => {
         console.log("Document content saved:", content);
@@ -22,27 +22,53 @@ export default function Page() {
 
     const [components, setComponents] = useState<React.ReactNode[]>([]);
 
-    const addComponent = () => {
+    const addComponent = (letter) => {
         setComponents((prevComponents) => {
             return [
                 ...prevComponents,
-                <AccountIcon key={prevComponents.length} index={prevComponents.length + 1} firstLetterName={undefined}/>
+                <AccountIcon key={prevComponents.length} index={prevComponents.length + 1} firstLetterName={letter}/>
             ];
         });
     };
 
     //Ge username and set first letter
     const {username, setUsername}= useGlobalContext();
-    useEffect(() => {
-        setFirsLetterUsername(username.charAt(0).toUpperCase())
-    }, [firstLetterUsername]);
+    const [room, setRoom] = useState("room1"); // Default room for all tabs
 
-    //Redirect to first page, when refresh page
     useEffect(() => {
+        // setFirsLetterUsername(username.charAt(0).toUpperCase());
+
+        socket.emit("userJoinRoom", {username, room});
+
+        // Get users in a room
+        socket.emit('getUsersInRoom', 'room1', (usersRoom) => {
+            // console.log('Users in room1:', usersRoom);
+            for(let i=0; i<usersRoom.length; i++){
+                addComponent(usersRoom[i].firstCapitalLetter);
+            }
+        });
+
+        // Listen for state updates from the server
+        socket.on("stateUpdated", (data) => {
+            console.log("State updated from server:", data);
+
+            // Sync other tabs
+            addComponent(data.firstCapitalLetter);
+        });
+
+
+        //Redirect to first page, when refresh page
         if (username === "") {
-            router.push('/')
+            // router.push('/')
+
+            // socket.off("connect", onConnect);
+            // socket.off("disconnect", onDisconnect);
         }
-    }, [])
+
+        return () => {
+            // socket.disconnect();
+        };
+    }, [room]);
 
 
     return (
@@ -89,15 +115,17 @@ export default function Page() {
 
                         {/*Testing dynamic component*/}
                         <button onClick={addComponent}>Add Component</button>
+                        {/*AccountIcon users*/}
                         {components}
 
-                        <AccountIcon firstLetterName={firstLetterUsername} index={undefined}/>
+                        {/*<AccountIcon firstLetterName={firstLetterUsername} index={undefined}/>*/}
 
-                        <button className="w-24 h-10 text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
+
+                        {/*<AccountIcon firstLetterName="A" index={undefined}/>*/}
+                        <button
+                            className="w-24 h-10 text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
                             Share
                         </button>
-                        {/*Profile user*/}
-                        <AccountIcon firstLetterName="A" index={undefined}/>
                     </div>
                 </header>
 

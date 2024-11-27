@@ -5,39 +5,48 @@ import {useRouter} from "next/navigation";
 import {robotoMono} from '@gds/app/ui/fonts';
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/loading";
-import {socket} from "@gds/socket";
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
     const router = useRouter();
     const {username, setUsername}= useGlobalContext();
 
-    const [room, setRoom] = useState("default"); // Default room for all tabs
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
 
     async function onSubmit(e: { preventDefault: () => void; }) {
         e.preventDefault();
 
-        if (socket.connected) {
-            // onConnect(username);
+        // if (socket.connected) {
+        //     // onConnect(username);
+        //
+        //     // Join the room
+        //     // socket.emit("joinRoom", room);
+        //
+        //     // socket.emit("username", username);
+        //
+        //     // Join the room by username
+        //     socket.emit("userJoinRoom", {username, room});
+        //
+        //     // Get users in a room
+        //     socket.emit('getUsersInRoom', 'room1', (usersRoom) => {
+        //         console.log('Users in room1:', usersRoom);
+        //     });
+        //
+        //     // socket.emit("join", { username: username, room: room });
+        //
+        // }
 
-            // Join the room
-            // socket.emit("joinRoom", room);
-
-            // socket.emit("username", username);
-        }
-
-        // router.push('/document');
+        router.push('/document');
     }
 
     const sendMessage = () => {
         if (message) {
             // Send the message to the server
-            socket.emit("sendMessage", { room, message });
+            // socket.emit("sendMessage", { room, message });
 
             // Add the message to local state
-            setMessages((prevMessages) => [...prevMessages, message]);
+            // setMessages((prevMessages) => [...prevMessages, message]);
             setMessage("");
         }
     };
@@ -47,14 +56,14 @@ export default function Home() {
 
     function onConnect(usernameInput?: string) {
         setIsConnected(true);
-        setTransport(socket.io.engine.transport.name);
+        // setTransport(socket.io.engine.transport.name);
 
         const username = usernameInput ? usernameInput : uuidv4();
         // console.log(`User ${username} connected`);
 
-        socket.io.engine.on("upgrade", (transport) => {
-            setTransport(transport.name);
-        });
+        // socket.io.engine.on("upgrade", (transport) => {
+        //     setTransport(transport.name);
+        // });
     }
 
     function onDisconnect() {
@@ -70,19 +79,16 @@ export default function Home() {
     }, []);
 
 
-    useEffect(() => {
-        // Join the room
-        socket.emit("joinRoom", room);
-
-        // Listen for messages
-        socket.on("message", (msg) => {
-            setMessages((prevMessages) => [...prevMessages, msg]);
-        });
-
-        return () => {
-            socket.disconnect();
-        };
-    }, [room]);
+    // useEffect(() => {
+    //     // Listen for messages
+    //     socket.on("message", (msg) => {
+    //         setMessages((prevMessages) => [...prevMessages, msg]);
+    //     });
+    //
+    //     return () => {
+    //         socket.disconnect();
+    //     };
+    // }, [room]);
 
     return (
         <>
@@ -143,7 +149,6 @@ export default function Home() {
 
                 <div>
                     <h1>Multi-Tab Chat</h1>
-                    <h2>Room: {room}</h2>
 
                     <input
                         type="text"
