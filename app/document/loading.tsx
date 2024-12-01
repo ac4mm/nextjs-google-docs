@@ -17,8 +17,8 @@ export default function Loading(){
     )
     const SkeletonUser = () => (
         <>
-            <Skeleton className="w-24 h-10 rounded-full" height={40} width={96}/>
             <Skeleton circle height={40} width={40}/>
+            <Skeleton className="w-24 h-10 rounded-full" height={40} width={96}/>
         </>
 
     )
