@@ -59,7 +59,7 @@ export default function Page() {
 
         //Redirect to first page, when refresh page
         if (username === "") {
-            // router.push('/')
+            router.push('/');
 
             // socket.off("connect", onConnect);
             // socket.off("disconnect", onDisconnect);
@@ -114,7 +114,8 @@ export default function Page() {
                     <div className="flex items-center space-x-2 justify-end	mx-4">
 
                         {/*Testing dynamic component*/}
-                        <button onClick={addComponent}>Add Component</button>
+                        {/*<button onClick={addComponent}>Add Component</button>*/}
+
                         {/*AccountIcon users*/}
                         {components}
 
@@ -131,7 +132,7 @@ export default function Page() {
 
                 {/*Content with RTE*/}
                 <div className="p-6 bg-gray-100">
-                    <Rte initialContent={initialDocumentContent} onSave={handleSave}/>
+                    <Rte initialContent={initialDocumentContent} onSave={handleSave} socket={socket}/>
                     {savedContent && (
                         <div className="mt-6 p-4 border rounded bg-gray-50">
                             <h2 className="text-lg font-semibold">Saved Content:</h2>

@@ -12,7 +12,9 @@ const handler = app.getRequestHandler();
 app.prepare().then(() => {
     const httpServer = createServer(handler);
 
-    const io = new Server(httpServer);
+    const io = new Server(httpServer, {
+        connectionStateRecovery: {}
+    });
 
     let users = [];
     io.on("connection", (socket) => {
@@ -27,7 +29,7 @@ app.prepare().then(() => {
         socket.on("userJoinRoom", ({username, room}) => {
             socket.join(room);
             socket.username = username;
-            console.log(`User ${username} joined room: ${room}`);
+            console.log(`User ${username} joined (room: ${room}, socketId: ${socket.id})`);
 
             socket.broadcast.emit("stateUpdated", {
                 socketId: socket.id,
@@ -40,8 +42,6 @@ app.prepare().then(() => {
             socket.join(room);
             // console.log(`User ${socket.id} joined room: ${room}`);
             socket.to(room).emit("message", `User ${socket.id} has joined the room`);
-
-
         });
 
         // Get users in a room with their usernames
@@ -61,7 +61,7 @@ app.prepare().then(() => {
 
         // Broadcast message to the room
         socket.on("sendMessage", ({ room, message }) => {
-            // console.log(`Message to ${room}: ${message}`);
+            // console.log(`Message sent to ${room}: ${message}`);
             io.to(room).emit("message", message);
         });
 
