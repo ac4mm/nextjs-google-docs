@@ -16,20 +16,19 @@ app.prepare().then(() => {
         connectionStateRecovery: {}
     });
 
-    let users = [];
+    const users = new Map();
     io.on("connection", (socket) => {
-
-        // console.log(`User ${socket.id} connected`);
-
-        // socket.on("join", (data) => {
-        //     users.push({ id: socket.id, username: data.username });
-        //     io.emit("userList", users); // Send updated user list
-        // });
 
         socket.on("userJoinRoom", ({username, room}) => {
             socket.join(room);
             socket.username = username;
             console.log(`User ${username} joined (room: ${room}, socketId: ${socket.id})`);
+
+            users.set(socket.id, { username, room });
+
+            // Emit updated user list to the room
+            const usersInRoom = [...users.values()].filter((user) => user.room === room);
+            io.to(room).emit('roomUsers', usersInRoom);
 
             socket.broadcast.emit("stateUpdated", {
                 socketId: socket.id,
@@ -40,7 +39,7 @@ app.prepare().then(() => {
 
         socket.on("joinRoom", (room) => {
             socket.join(room);
-            // console.log(`User ${socket.id} joined room: ${room}`);
+
             socket.to(room).emit("message", `User ${socket.id} has joined the room`);
         });
 
@@ -61,29 +60,28 @@ app.prepare().then(() => {
 
         // Broadcast message to the room
         socket.on("sendMessage", ({ room, message }) => {
-            // console.log(`Message sent to ${room}: ${message}`);
             io.to(room).emit("message", message);
         });
 
-        // socket.on("username", (username) => {
-        //     socket.join(socket.id);
-        //
-        //     console.log(`User ${username} joined room ${socket.id}`);
-        //
-        //     // Broadcast current sessions for the user
-        //     io.to(socket.id).emit("updateSessions", userSessions[username]);
-        // });
-
         socket.on("disconnect", () => {
-            console.log(`User ${socket.username} disconnected`, socket.id);
-            // console.log("User disconnected:", socket.id);
+            const user = users.get(socket.id);
 
-            users = users.filter((user) => user.id !== socket.id);
-            io.emit("userList", users); // Send updated user list
+            if (user) {
+                const { username, room } = user;
+
+                console.log(`User ${username} disconnected (room: ${room}, socketId: ${socket.id})`);
+
+                // Remove the user from the `users` map
+                users.delete(socket.id);
+
+                // Emit updated user list to the room
+                const usersInRoom = [...users.values()].filter((user) => user.room === room);
+                io.to(room).emit('roomUsers', usersInRoom);
+
+                io.to(room).emit('userLeaveRoom', {socketId: socket.id, username: username});
+            }
         });
     });
-
-
 
     httpServer
         .once("error", (err) => {

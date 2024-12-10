@@ -5,70 +5,15 @@ import {useRouter} from "next/navigation";
 import {robotoMono} from '@gds/app/ui/fonts';
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/loading";
-import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
     const router = useRouter();
     const {username, setUsername}= useGlobalContext();
 
-    const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState([]);
-
     async function onSubmit(e: { preventDefault: () => void; }) {
         e.preventDefault();
 
-        // if (socket.connected) {
-        //     // onConnect(username);
-        //
-        //     // Join the room
-        //     // socket.emit("joinRoom", room);
-        //
-        //     // socket.emit("username", username);
-        //
-        //     // Join the room by username
-        //     socket.emit("userJoinRoom", {username, room});
-        //
-        //     // Get users in a room
-        //     socket.emit('getUsersInRoom', 'room1', (usersRoom) => {
-        //         console.log('Users in room1:', usersRoom);
-        //     });
-        //
-        //     // socket.emit("join", { username: username, room: room });
-        //
-        // }
-
         router.push('/document');
-    }
-
-    const sendMessage = () => {
-        if (message) {
-            // Send the message to the server
-            // socket.emit("sendMessage", { room, message });
-
-            // Add the message to local state
-            // setMessages((prevMessages) => [...prevMessages, message]);
-            setMessage("");
-        }
-    };
-
-    const [isConnected, setIsConnected] = useState(false);
-    const [transport, setTransport] = useState("N/A");
-
-    function onConnect(usernameInput?: string) {
-        setIsConnected(true);
-        // setTransport(socket.io.engine.transport.name);
-
-        const username = usernameInput ? usernameInput : uuidv4();
-        // console.log(`User ${username} connected`);
-
-        // socket.io.engine.on("upgrade", (transport) => {
-        //     setTransport(transport.name);
-        // });
-    }
-
-    function onDisconnect() {
-        setIsConnected(false);
-        setTransport("N/A");
     }
 
     useEffect(() => {
@@ -77,18 +22,6 @@ export default function Home() {
             // socket.off("disconnect", onDisconnect);
         };
     }, []);
-
-
-    // useEffect(() => {
-    //     // Listen for messages
-    //     socket.on("message", (msg) => {
-    //         setMessages((prevMessages) => [...prevMessages, msg]);
-    //     });
-    //
-    //     return () => {
-    //         socket.disconnect();
-    //     };
-    // }, [room]);
 
     return (
         <>
@@ -141,32 +74,6 @@ export default function Home() {
                         </form>
                     </div>
                 </Suspense>
-
-                <div>
-                    <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-                    <p>Transport: {transport}</p>
-                </div>
-
-                <div>
-                    <h1>Multi-Tab Chat</h1>
-
-                    <input
-                        type="text"
-                        placeholder="Enter your message"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                    />
-                    <button onClick={sendMessage}>Send Message</button>
-
-                    <div>
-                        <h2>Messages:</h2>
-                        <ul>
-                            {messages.map((msg, idx) => (
-                                <li key={idx}>{msg}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
             </div>
         </>
     )

@@ -22,30 +22,33 @@ export default function Page() {
 
     const [components, setComponents] = useState<React.ReactNode[]>([]);
 
-    const addComponent = (letter) => {
-        setComponents((prevComponents) => {
-            return [
-                ...prevComponents,
-                <AccountIcon key={prevComponents.length} index={prevComponents.length + 1} firstLetterName={letter}/>
-            ];
-        });
+    const addComponent = (socketId: string, letter: string) => {
+        setComponents((prevComponents) => [
+            ...prevComponents,
+            {
+                socketId,
+                component: <AccountIcon key={socketId} firstLetterName={letter} />,
+            },
+        ]);
+    };
+
+    const removeComponent = (socketId: string) => {
+        setComponents((prevComponents) => prevComponents.filter((comp) => comp.socketId !== socketId));
     };
 
     //Ge username and set first letter
     const {username, setUsername}= useGlobalContext();
     const [room, setRoom] = useState("room1"); // Default room for all tabs
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        // setFirsLetterUsername(username.charAt(0).toUpperCase());
-
         socket.emit("userJoinRoom", {username, room});
 
         // Get users in a room
         socket.emit('getUsersInRoom', 'room1', (usersRoom) => {
-            // console.log('Users in room1:', usersRoom);
-            for(let i=0; i<usersRoom.length; i++){
-                addComponent(usersRoom[i].firstCapitalLetter);
-            }
+            usersRoom.forEach((user) => {
+                addComponent(user.socketId, user.firstCapitalLetter);
+            });
         });
 
         // Listen for state updates from the server
@@ -53,22 +56,51 @@ export default function Page() {
             console.log("State updated from server:", data);
 
             // Sync other tabs
-            addComponent(data.firstCapitalLetter);
+            if(data?.firstCapitalLetter && data?.firstCapitalLetter !== ''){
+                addComponent(data.socketId, data.firstCapitalLetter);
+            }
         });
+
+        // Listen for updates to room users
+        socket.on('roomUsers', (updatedUsers) => {
+            setUsers(updatedUsers);
+            console.log("from roomUsers:", updatedUsers);
+
+
+            // Update components to match the new user list
+            const updatedUserIds = updatedUsers.map((user) => user.socketId);
+
+            components.forEach(({ socketId }) => {
+                if (!updatedUserIds.includes(socketId)) {
+                    removeComponent(socketId); // Remove components for users no longer in the room
+                }
+            });
+        });
+
+        socket.on('userLeaveRoom', (userLeaveRoom) => {
+            console.log(userLeaveRoom);
+            removeComponent(userLeaveRoom.socketId)
+        })
 
 
         //Redirect to first page, when refresh page
         if (username === "") {
             router.push('/');
-
-            // socket.off("connect", onConnect);
-            // socket.off("disconnect", onDisconnect);
         }
+
+        // Handle user disconnection
+        socket.on("disconnect", () => {
+            removeComponent(socket.id);
+        });
 
         return () => {
             // socket.disconnect();
+            socket.off("stateUpdated");
+            socket.off("roomUsers");
+            socket.off("userLeaveRoom");
+            socket.off("disconnect");
         };
-    }, [room]);
+    }, [room, username]);
 
 
     return (
@@ -117,12 +149,16 @@ export default function Page() {
                         {/*<button onClick={addComponent}>Add Component</button>*/}
 
                         {/*AccountIcon users*/}
-                        {components}
+                        {components.map(({ component }) => component)}
 
-                        {/*<AccountIcon firstLetterName={firstLetterUsername} index={undefined}/>*/}
+                        <h2>Active Users:</h2>
+                        <ul>
+                            {users.map((user) => (
+                                <li key={user.socketId}>{user.username}</li>
+                            ))}
+                        </ul>
 
-
-                        {/*<AccountIcon firstLetterName="A" index={undefined}/>*/}
+                        {/*currentUser: {username}*/}
                         <button
                             className="w-24 h-10 text-blue-600 bg-blue-100 px-4 py-1 rounded-full hover:bg-blue-200">
                             Share
