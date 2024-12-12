@@ -6,11 +6,10 @@ import {Socket} from "socket.io-client";
 
 interface RteProps {
     initialContent: string;
-    onSave?: (html: string) => void;
     socket: Socket;
 }
 
-export const Rte: React.FC<RteProps> = ({ initialContent, onSave, socket }: RteProps)=> {
+export const Rte: React.FC<RteProps> = ({ initialContent, socket }: RteProps)=> {
     // Initialize the editor with initial content
     const editor = useEditor({
         extensions: [
@@ -46,17 +45,14 @@ export const Rte: React.FC<RteProps> = ({ initialContent, onSave, socket }: RteP
         });
 
         socket.on('log-update', (message) => {
-            setRealTimeLogs((prev) => [...prev, message]);
+            setRealTimeLogs(addLogs);
+
+            function addLogs(prev: string[]) {
+                return [...prev, message];
+            }
         });
 
     }, [initialContent, editor]);
-
-    // Save content to parent or external storage when needed
-    const handleSave = () => {
-        if (onSave && editor) {
-            onSave(editor.getHTML());  // Retrieve and save the current content as HTML
-        }
-    };
 
     if (!editor) {
         return null
@@ -107,13 +103,6 @@ export const Rte: React.FC<RteProps> = ({ initialContent, onSave, socket }: RteP
 
                 {/* Editor Content */}
                 <EditorContent editor={editor} className="border p-4 w-9/12 h-96 xl:mx-auto rounded bg-white"/>
-
-                {/* Save Button */}
-                {/*<div className="mt-4 flex justify-end">*/}
-                {/*    <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded">*/}
-                {/*        Save*/}
-                {/*    </button>*/}
-                {/*</div>*/}
             </div>
 
             <div className="col-span-1">

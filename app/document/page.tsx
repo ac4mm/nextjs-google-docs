@@ -1,38 +1,39 @@
 'use client'
 
+import React, {Suspense, useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 import Image from 'next/image';
-import docsIcon from '../../public/Google_Docs_2020_Logo.svg';
+
+
+import {socket} from "@gds/socket";
 import {Rte} from "@gds/app/ui/rte";
-import React, {SetStateAction, Suspense, useEffect, useState} from "react";
 import {AccountIcon} from "@gds/app/ui/account-icon";
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/document/loading";
-import {useRouter} from "next/navigation";
-import {socket} from "@gds/socket";
+import {User} from "@gds/app/model/user.model";
+import docsIcon from '../../public/Google_Docs_2020_Logo.svg';
 
 export default function Page() {
     const initialDocumentContent = "Welcome to your new document!";
-    const [savedContent, setSavedContent] = useState("");
     const router = useRouter();
-
-    const handleSave = (content: SetStateAction<string>) => {
-        console.log("Document content saved:", content);
-        setSavedContent(content); // Here you can send it to a server or save locally
-    };
 
     const [components, setComponents] = useState<React.ReactNode[]>([]);
 
     const addComponent = (socketId: string, letter: string) => {
-        setComponents((prevComponents) => [
-            ...prevComponents,
-            {
-                socketId,
-                component: <AccountIcon key={socketId} firstLetterName={letter} />,
-            },
-        ]);
+        setComponents(addAccountIcon);
+
+        function addAccountIcon(prevComponents: any) {
+            return [
+                ...prevComponents,
+                {
+                    socketId,
+                    component: <AccountIcon key={socketId} firstLetterName={letter}/>,
+                },
+            ];
+        }
     };
 
-    const removeComponent = (socketId: string) => {
+    const removeComponent = (socketId: string | undefined) => {
         setComponents((prevComponents) => prevComponents.filter((comp) => comp.socketId !== socketId));
     };
 
@@ -45,19 +46,19 @@ export default function Page() {
         socket.emit("userJoinRoom", {username, room});
 
         // Get users in a room
-        socket.emit('getUsersInRoom', 'room1', (usersRoom) => {
-            usersRoom.forEach((user) => {
+        socket.emit('getUsersInRoom', 'room1', (usersRoom: User[]) => {
+            usersRoom.forEach((user:User) => {
                 addComponent(user.socketId, user.firstCapitalLetter);
             });
         });
 
         // Listen for state updates from the server
-        socket.on("stateUpdated", (data) => {
-            console.log("State updated from server:", data);
+        socket.on("stateUpdated", (user: User) => {
+            console.log("State updated from server:", user);
 
             // Sync other tabs
-            if(data?.firstCapitalLetter && data?.firstCapitalLetter !== ''){
-                addComponent(data.socketId, data.firstCapitalLetter);
+            if(user?.firstCapitalLetter && user?.firstCapitalLetter !== ''){
+                addComponent(user.socketId, user.firstCapitalLetter);
             }
         });
 
@@ -68,11 +69,11 @@ export default function Page() {
 
 
             // Update components to match the new user list
-            const updatedUserIds = updatedUsers.map((user) => user.socketId);
+            const updatedUserIds = updatedUsers.map((user: User) => user.socketId);
 
             components.forEach(({ socketId }) => {
                 if (!updatedUserIds.includes(socketId)) {
-                    removeComponent(socketId); // Remove components for users no longer in the room
+                    removeComponent(socketId);
                 }
             });
         });
@@ -94,7 +95,6 @@ export default function Page() {
         });
 
         return () => {
-            // socket.disconnect();
             socket.off("stateUpdated");
             socket.off("roomUsers");
             socket.off("userLeaveRoom");
@@ -168,13 +168,7 @@ export default function Page() {
 
                 {/*Content with RTE*/}
                 <div className="p-6 bg-gray-100">
-                    <Rte initialContent={initialDocumentContent} onSave={handleSave} socket={socket}/>
-                    {savedContent && (
-                        <div className="mt-6 p-4 border rounded bg-gray-50">
-                            <h2 className="text-lg font-semibold">Saved Content:</h2>
-                            <div dangerouslySetInnerHTML={{__html: savedContent}}/>
-                        </div>
-                    )}
+                    <Rte initialContent={initialDocumentContent} socket={socket}/>
                 </div>
             </Suspense>
 
