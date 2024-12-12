@@ -1,10 +1,14 @@
 "use client"
 
-import React, {Suspense, useEffect, useState} from "react";
+import React, {Suspense, useEffect} from "react";
+
 import {useRouter} from "next/navigation";
+import Image from 'next/image';
 import {robotoMono} from '@gds/app/ui/fonts';
 import {useGlobalContext} from "@gds/app/context/store";
 import Loading from "@gds/app/loading";
+
+import docsIcon from '../public/Google_Docs_2020_Logo.svg';
 
 export default function Home() {
     const router = useRouter();
@@ -29,10 +33,10 @@ export default function Home() {
                 <Suspense fallback={<Loading/>}>
                     {/*Logo and Text*/}
                     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                        <img
-                            alt="Google Docs"
-                            src="https://upload.wikimedia.org/wikipedia/commons/6/66/Google_Docs_2020_Logo.svg?color=indigo&shade=600"
+                        <Image
+                            src={docsIcon}
                             className="mx-auto h-16 w-auto"
+                            alt="Google Docs"
                         />
                         <h2
                             className={`${robotoMono.className} regular mt-6 mb-6 text-center text-3xl font-semibold leading-9 tracking-tight text-white-900`}>
