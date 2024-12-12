@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
 import {Underline} from "@tiptap/extension-underline";
@@ -26,6 +26,10 @@ export const Rte: React.FC<RteProps> = ({ initialContent, onSave, socket }: RteP
         },
     });
 
+    const [logs, setLogs] = useState([]);
+    const [realTimeLogs, setRealTimeLogs] = useState([]);
+
+
     useEffect(() => {
         if (!editor) return;
 
@@ -35,6 +39,14 @@ export const Rte: React.FC<RteProps> = ({ initialContent, onSave, socket }: RteP
 
         socket.on("message", (msg) => {
             editor.commands.setContent(msg);
+        });
+
+        socket.on('log-history', (logHistory) => {
+            setLogs(logHistory);
+        });
+
+        socket.on('log-update', (message) => {
+            setRealTimeLogs((prev) => [...prev, message]);
         });
 
     }, [initialContent, editor]);
@@ -107,7 +119,13 @@ export const Rte: React.FC<RteProps> = ({ initialContent, onSave, socket }: RteP
             <div className="col-span-1">
                 <h1 className="flex justify-center items-center space-x-2 mb-4">LOGGING</h1>
                 <div className="border p-4 w-full h-96 xl:mx-auto rounded bg-neutral-700 text-slate-50">
-                    <p className="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas libero ante, mattis dapibus lacus quis, pretium ornare velit.</p>
+                    {/*<p className="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas libero ante, mattis dapibus lacus quis, pretium ornare velit.</p>*/}
+                    <p className="text-xs">
+                        {realTimeLogs.map((log, index) => (
+                            <ul key={index}>{log}</ul>
+                        ))}
+                    </p>
+                    <pre>{logs.join('\n')}</pre>
                 </div>
             </div>
         </div>

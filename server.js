@@ -9,6 +9,16 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handler = app.getRequestHandler();
 
+// In-memory log storage
+let logs = [];
+
+// Utility function to log messages
+function logEvent(event, data) {
+    const logMessage = `[${new Date().toISOString()}] ${event}: ${JSON.stringify(data)}`;
+    logs.push(logMessage);
+    // console.log(logMessage);
+}
+
 app.prepare().then(() => {
     const httpServer = createServer(handler);
 
@@ -23,6 +33,8 @@ app.prepare().then(() => {
             socket.join(room);
             socket.username = username;
             console.log(`User ${username} joined (room: ${room}, socketId: ${socket.id})`);
+            logEvent('User Login', { id: socket.id, username });
+            io.emit('log-update', `${username} join ${room}`);
 
             users.set(socket.id, { username, room });
 
@@ -70,6 +82,8 @@ app.prepare().then(() => {
                 const { username, room } = user;
 
                 console.log(`User ${username} disconnected (room: ${room}, socketId: ${socket.id})`);
+                logEvent('User Logout', { id: socket.id, username });
+                io.emit('log-update', `${username} exit from ${room}`);
 
                 // Remove the user from the `users` map
                 users.delete(socket.id);
