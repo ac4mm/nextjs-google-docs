@@ -16,11 +16,9 @@ export const Rte: React.FC<RteProps> = ({ initialContent, socket }: RteProps)=> 
             StarterKit,
             Underline
         ],
-        content: initialContent,  // Setting initial content
+        content: initialContent,
         immediatelyRender: false,
         onUpdate({ editor }) {
-            console.log(editor.getText());
-
             socket.emit("sendMessage", {room: 'room1', message: editor.getText()})
         },
     });

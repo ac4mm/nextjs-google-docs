@@ -16,6 +16,7 @@ import docsIcon from '../../public/Google_Docs_2020_Logo.svg';
 export default function Page() {
     const initialDocumentContent = "Welcome to your new document!";
     const router = useRouter();
+    const [titleDocument, setTitleDocument ] = useState('Untitled Document');
 
     const [components, setComponents] = useState<React.ReactNode[]>([]);
 
@@ -54,7 +55,7 @@ export default function Page() {
 
         // Listen for state updates from the server
         socket.on("stateUpdated", (user: User) => {
-            console.log("State updated from server:", user);
+            // console.log("State updated from server:", user);
 
             // Sync other tabs
             if(user?.firstCapitalLetter && user?.firstCapitalLetter !== ''){
@@ -65,7 +66,7 @@ export default function Page() {
         // Listen for updates to room users
         socket.on('roomUsers', (updatedUsers) => {
             setUsers(updatedUsers);
-            console.log("from roomUsers:", updatedUsers);
+            // console.log("from roomUsers:", updatedUsers);
 
 
             // Update components to match the new user list
@@ -79,9 +80,13 @@ export default function Page() {
         });
 
         socket.on('userLeaveRoom', (userLeaveRoom) => {
-            console.log(userLeaveRoom);
+            // console.log(userLeaveRoom);
             removeComponent(userLeaveRoom.socketId)
         })
+
+        socket.on("titleDoc", (title) => {
+            setTitleDocument(title);
+        });
 
 
         //Redirect to first page, when refresh page
@@ -98,9 +103,16 @@ export default function Page() {
             socket.off("stateUpdated");
             socket.off("roomUsers");
             socket.off("userLeaveRoom");
+            socket.off("titleDoc");
             socket.off("disconnect");
         };
     }, [room, username]);
+
+    const handleChange = (event) => {
+        setTitleDocument(event.target.value);
+
+        socket.emit("changeTitleDoc", {room: 'room1', message: event.target.value})
+    };
 
 
     return (
@@ -124,7 +136,8 @@ export default function Page() {
 
                             <input
                                 type="text"
-                                defaultValue="Untitled Document"
+                                value={titleDocument}
+                                onInput={handleChange}
                                 className="text-xl font-normal focus:outline-none border-b border-transparent focus:border-gray-300 pl-1"
                             />
                         </div>

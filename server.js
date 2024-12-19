@@ -75,6 +75,10 @@ app.prepare().then(() => {
             io.to(room).emit("message", message);
         });
 
+        socket.on("changeTitleDoc", ({ room, message }) => {
+            socket.broadcast.emit("titleDoc", message);
+        });
+
         socket.on("disconnect", () => {
             const user = users.get(socket.id);
 
