@@ -164,12 +164,12 @@ export default function Page() {
                         {/*AccountIcon users*/}
                         {components.map(({ component }) => component)}
 
-                        <h2>Active Users:</h2>
-                        <ul>
-                            {users.map((user) => (
-                                <li key={user.socketId}>{user.username}</li>
-                            ))}
-                        </ul>
+                        {/*<h2>Active Users:</h2>*/}
+                        {/*<ul>*/}
+                        {/*    {users.map((user) => (*/}
+                        {/*        <li key={user.socketId}>{user.username}</li>*/}
+                        {/*    ))}*/}
+                        {/*</ul>*/}
 
                         {/*currentUser: {username}*/}
                         <button
