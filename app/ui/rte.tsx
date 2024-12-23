@@ -107,11 +107,11 @@ export const Rte: React.FC<RteProps> = ({ initialContent, socket }: RteProps)=> 
                 <h1 className="flex justify-center items-center space-x-2 mb-4">LOGGING</h1>
                 <div className="border p-4 w-full h-96 xl:mx-auto rounded bg-neutral-700 text-slate-50">
                     {/*<p className="text-xs">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas libero ante, mattis dapibus lacus quis, pretium ornare velit.</p>*/}
-                    <p className="text-xs">
+                    <div className="text-xs">
                         {realTimeLogs.map((log, index) => (
                             <ul key={index}>{log}</ul>
                         ))}
-                    </p>
+                    </div>
                     <pre>{logs.join('\n')}</pre>
                 </div>
             </div>
