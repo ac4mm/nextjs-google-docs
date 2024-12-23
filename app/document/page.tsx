@@ -23,7 +23,7 @@ export default function Page() {
     const addComponent = (socketId: string, letter: string) => {
         setComponents(addAccountIcon);
 
-        function addAccountIcon(prevComponents: any) {
+        function addAccountIcon(prevComponents: React.SetStateAction<React.ReactNode[]>) {
             return [
                 ...prevComponents,
                 {
@@ -39,9 +39,9 @@ export default function Page() {
     };
 
     //Ge username and set first letter
-    const {username, setUsername}= useGlobalContext();
-    const [room, setRoom] = useState("room1"); // Default room for all tabs
-    const [users, setUsers] = useState([]);
+    const {username}= useGlobalContext();
+    const [room] = useState("room1");
+    const [, setUsers] = useState([]);
 
     useEffect(() => {
         socket.emit("userJoinRoom", {username, room});
@@ -108,7 +108,7 @@ export default function Page() {
         };
     }, [room, username]);
 
-    const handleChange = (event) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitleDocument(event.target.value);
 
         socket.emit("changeTitleDoc", {room: 'room1', message: event.target.value})
@@ -157,10 +157,7 @@ export default function Page() {
 
                     {/* User Area */}
                     <div className="flex items-center space-x-2 justify-end	mx-4">
-
-                        {/*Testing dynamic component*/}
-                        {/*<button onClick={addComponent}>Add Component</button>*/}
-
+                        
                         {/*AccountIcon users*/}
                         {components.map(({ component }) => component)}
 

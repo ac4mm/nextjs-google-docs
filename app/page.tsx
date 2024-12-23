@@ -1,6 +1,6 @@
 "use client"
 
-import React, {Suspense, useEffect} from "react";
+import React, {Suspense} from "react";
 
 import {useRouter} from "next/navigation";
 import Image from 'next/image';
@@ -19,13 +19,6 @@ export default function Home() {
 
         router.push('/document');
     }
-
-    useEffect(() => {
-        return () => {
-            // socket.off("connect", onConnect);
-            // socket.off("disconnect", onDisconnect);
-        };
-    }, []);
 
     return (
         <>
@@ -73,8 +66,6 @@ export default function Home() {
                                     Join
                                 </button>
                             </div>
-
-                            {/* <Chat />*/}
                         </form>
                     </div>
                 </Suspense>
